@@ -13,5 +13,7 @@ For the SPH method problem, the output file.VTK or .bgeo does not include the po
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 Original paper to re-implement: GNS https://github.com/google-deepmind/deepmind-research/tree/master/learning_to_simulate
-SPH data generate library:  https://github.com/InteractiveComputerGraphics/SPlisHSPlasH   and the example for generating the dataset is using custom_scene.py
-MPM data generate library:  https://github.com/yuanming-hu/taichi_mpm   the example for generating MPM dataset
+
+SPH data generate library:  https://github.com/InteractiveComputerGraphics/SPlisHSPlasH   and the example for generating the dataset is using custom_scene.py  https://github.com/InteractiveComputerGraphics/SPlisHSPlasH/blob/8454e9f454fef20771dfe98d318904da62764b4c/pySPlisHSPlasH/examples/custom_scene.py#L4
+
+MPM data generate library:  https://github.com/yuanming-hu/taichi_mpm   the example for generating MPM dataset is mpm3d which has a output.ply function https://github.com/taichi-dev/test_actions/blob/e5ed25678acfbe3eff49f4ac05345b183876890f/python/taichi/examples/simulation/mpm3d.py
