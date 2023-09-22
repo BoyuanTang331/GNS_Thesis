@@ -4,6 +4,7 @@ GNS-Thesis
 
 
 ----Update from 09.23.2023----
+
 For the MPM method problem, how to add an index to my convert_ply_to_tfrecord.py the index[] shows timesteps, particle number, and position, in my file, the features of data were only written in correct form like in GNS (one tuple for dataset, include 2 dicts, first dict is particle_type in array and key for timestep, second dict is position in array. showed in .png) 
 
 For the SPH method problem, the output file *.VTK* or *.bgeo* does not include the position information, the data generated code is from the file custom_scene.py in custom_scene.py I can use * fluid = sim.getFluidModel(0)* to get only the initial position. The author said it can be written in time_step_callback() in callbacks.py. but it didn't show the sequence position. the callbacks func can show a set of *steps*(only words for example) for each timestep, how can use this function to replace steps to my positions
