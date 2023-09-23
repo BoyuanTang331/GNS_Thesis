@@ -8,6 +8,11 @@ GNS-Thesis
 ValueError: Tensor conversion requested dtype float32 for Tensor with dtype float64: <tf.Tensor: shape=(0,), dtype=float64, numpy=array([], dtype=float64)>
 the point has already transferred to float32 when open the tfrecord,it still showed float64 
 
+Water2D_small.tfrecord is my tfrecord data, open it with open_tfrecord.py and the .ply data were generated from mpm_data_generation.py
+
+-----------------------------
+
+
 For the MPM method problem, the index[] shows timesteps, particle number, and position, in my file, the features of data were only written in same form like in GNS (one tuple for dataset, include 2 dicts, first dict is particle_type in array and key for timestep, second dict is position in array.） 
 
 For the SPH method problem, the output file *.VTK* or *.bgeo* does not include the position information, the data generated code is from the file custom_scene.py in custom_scene.py I can use * fluid = sim.getFluidModel(0)* to get only the initial position. The author said it can be written in time_step_callback() in callbacks.py. but it didn't show the sequence position. the callbacks function can show a set of *steps*(only words for example) for each timestep, how can use this function to replace steps to my positions
