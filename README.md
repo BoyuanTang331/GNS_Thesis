@@ -3,35 +3,35 @@
 GNS-Thesis
 
 
-----Update from 10.16.2023----
+----Update from 12.05.2023----
 
-bug: when converting the .ply point cloud file to .tfrecord file using tf.SequenceExample function, it shows the buffer size error. 
-![2d8fbf7c0399910fc7a777dac7a5d05](https://github.com/BoyuanTang331/GNS_Thesis/assets/117408630/e2b95d4d-214a-4f35-bfe4-b3220a3cd827)
+data generation work is finished, the dataset can use convert_npy_to_tfrecord.py to run mpmSceneSim.py for mpm and sphSceneSim.py to automatically get the numpy array in .npy files and convert it to tfrecord format and write the global parameter in metadata.json for the model learning phase. the dataset of fluid particle position should be Serialization as [code](https://github.com/google-deepmind/deepmind-research/blob/f5de0ede8430809180254ee957abf36ed62579ef/learning_to_simulate/reading_utils.py#L22C1-L22C1)  
+
+TO evaluate if the dataset is correct, it needs to run on [learning to simulate](https://github.com/google-deepmind/deepmind-research/blob/f5de0ede8430809180254ee957abf36ed62579ef/learning_to_simulate/train.py) and train the model, and then get the render result.
+
+the render result for my model is saved in animation.mp4 the result is unexpected, it has some minus position which is beyond the boundary! [image](https://github.com/BoyuanTang331/GNS_Thesis/assets/117408630/67175b2e-850d-435c-86f8-1948a8cf1e1e) and the result shows unstable for rollout predict (rollout gives the model the init position and predict the whole phase/ one step is each step are predict base on the last step on dataset)
+
+I set the batch size=4 and a [exp decay learning rate](https://github.com/google-deepmind/deepmind-research/blob/f5de0ede8430809180254ee957abf36ed62579ef/learning_to_simulate/train.py#L351) from 1e-6 to 1e-8. I am not sure the model is overfitting or underfitting, the loss has already oscillation from 1e-6 to 1e-7 at step5000 but I still train it 11000 step, because I thought the learning rate will decay and later will train more fine model and the author has a 1e-9 loss.
+
+my loss at end of training is ![image](https://github.com/BoyuanTang331/GNS_Thesis/assets/117408630/d2ac9854-564f-40c1-8aec-872096233b1f)
+
+my [evaluation](https://github.com/google-deepmind/deepmind-research/blob/f5de0ede8430809180254ee957abf36ed62579ef/learning_to_simulate/train.py) set mode="eval_rollout" and the result ![image](https://github.com/BoyuanTang331/GNS_Thesis/assets/117408630/730eb791-3b5c-4443-bdfa-c023ffceb6a9)
+
+bad predict is in animation.mp4 
 
 
------------------------------
-
-In order to directly use the model to train, I want to write the dataset in the same form as the author, their dataset is written in *.tfrecord* form. In the dataset reading function, https://github.com/google-deepmind/deepmind-research/blob/f5de0ede8430809180254ee957abf36ed62579ef/learning_to_simulate/reading_utils.py#L59 shows that their dataset was written in the certain format as tf.SequenceExample https://www.tensorflow.org/api_docs/python/tf/train/SequenceExample What I need do is get the fluid particle position from the traditional physic engine MPM&SPH method, and add the time step for key as well as particle type a full array with 5. 
-![image](https://github.com/BoyuanTang331/GNS_Thesis/assets/117408630/751f0f00-beb7-489e-a8c8-bbfe1972445d)
-
-Check if the .tfrecord is correct can use the **opentfrecord.py** code to open, Generate mpm data use **mpm_data_generation.py** code, Some ply example are in **mpm** folder. Convert .ply to .tfrecord code is **convert_mpm_dataset.py**  .tfrecord include buffer size error is **test.tfrecord**  
-
-I found a reply from the author in an issue that if .tfrecord is difficult to achieve， it can be used another method tf.data.Dataset to complete dataset https://github.com/google-deepmind/deepmind-research/issues/199#issuecomment-901040649 
-
------------------------------
-
-For the MPM method problem, use *mpm_data_generation.py* can generate a set of ply files, which include 2D/3D point position, each ply file shows the particle position in *step×dt* time interval. the ply file is specifically used for a render software Blender, inside the file it may also include the vertex， edge and surface information. how to extract only the point position information to convert the tfrecord? In https://github.com/BoyuanTang331/GNS_Thesis/blob/b923c6c6ee487335db273528457e73d8f2505fb5/mpm_data_generation.py#L114 this ti.tool.PLYwriter function it convert the numpy array to ply, can I directly use numpy array to convert a tfrecord without considering ply file?
-
-For the SPH method problem, the output file *.VTK* or *.bgeo* may not include the position information, the data generated code is from the file **custom_scene.py**. In this file I can use **fluid = sim.getFluidModel(0)** to get only the initial position. The author said it can be written in time_step_callback() in callbacks.py. but it didn't show the sequence position. the callbacks function can show a set of *steps*(only words for example) for each timestep, how can I use this function to replace steps to my positions? reply from the library author (https://github.com/InteractiveComputerGraphics/SPlisHSPlasH/discussions/275#discussioncomment-7030194 )
 
 
 ----------------------------------------------------------------------------------------------------------------------------------------
-Original paper to re-implement: GNS https://github.com/google-deepmind/deepmind-research/tree/master/learning_to_simulate
+Original [paper](https://github.com/google-deepmind/deepmind-research/tree/master/learning_to_simulate) to re-implement
 
-Dataset generation in two methods: SPH and MPM
+Dataset generation in two methods: DFSPH and MLS-MPM
 
-SPH data generate library:  https://github.com/InteractiveComputerGraphics/SPlisHSPlasH   and the example for generating the dataset is using custom_scene.py  https://github.com/InteractiveComputerGraphics/SPlisHSPlasH/blob/8454e9f454fef20771dfe98d318904da62764b4c/pySPlisHSPlasH/examples/custom_scene.py#L4
+SPH data generate [library](https://github.com/InteractiveComputerGraphics/SPlisHSPlasH)    and the example for generating the dataset is using [sph_example.py](https://github.com/InteractiveComputerGraphics/SPlisHSPlasH/blob/8454e9f454fef20771dfe98d318904da62764b4c/pySPlisHSPlasH/examples/custom_scene.py#L4)  
 
-MPM data generate library:  https://github.com/yuanming-hu/taichi_mpm   The example for generating MPM dataset is mpm3d.py which has a ti.tools.PLYWriter function https://github.com/taichi-dev/test_actions/blob/e5ed25678acfbe3eff49f4ac05345b183876890f/python/taichi/examples/simulation/mpm3d.py
+MPM data generate [library](https://github.com/yuanming-hu/taichi_mpm)    
+The example for generating the MPM dataset is [mpm_example.py](https://github.com/taichi-dev/test_actions/blob/e5ed25678acfbe3eff49f4ac05345b183876890f/python/taichi/examples/simulation/mpm3d.py) 
 
-The original dataset from the GNS paper can be downloaded at: https://storage.googleapis.com/learning-to-simulate-complex-physics/Datasets/water/train.tfrecord or use bash referring to GNS page
+my mpm2d dataset is stored in [Google Drive](https://drive.google.com/drive/folders/1-KhKdztRIIGeD8T_Dw_qaK16eFFbKI-B?usp=drive_link) because of the large size
+
+
