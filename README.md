@@ -11,13 +11,13 @@ TODO: evaluate my dataset and check from the model predict if the dataset is cor
 
 
 
-The render result for my model is saved in **animation.mp4** the result is unexpected, it has some minus position which is beyond the boundary! [image](https://github.com/BoyuanTang331/GNS_Thesis/assets/117408630/67175b2e-850d-435c-86f8-1948a8cf1e1e) and the result shows unstable for rollout predict (rollout gives the model the init position and predict the whole phase/ one step is each step are predicted base on the last step on the dataset)
+The render result for my model is saved in **animation.mp4** the result is unexpected, it has some minus position which is beyond the boundary ![image](https://github.com/BoyuanTang331/GNS_Thesis/assets/117408630/67175b2e-850d-435c-86f8-1948a8cf1e1e) and the result shows unstable for rollout predict (rollout gives the model the init position and predict the whole phase/ one step is each step are predicted base on the last step on the dataset)
 
 I set the batch size=4 and a [exp decay learning rate](https://github.com/google-deepmind/deepmind-research/blob/f5de0ede8430809180254ee957abf36ed62579ef/learning_to_simulate/train.py#L351) from 1e-6 to 1e-8. I am not sure if the model is overfitting or underfitting, the loss has already oscillated from 1e-6 to 1e-7 at step5000 but I still trained it 11000 steps, because I thought the learning rate would decay and later trained a fine model and the author had a 1e-9 loss. 
 
 maybe there are some fault on dataset for example the vel_mean and Vel_std which I calculate directly with [np,diff](https://github.com/BoyuanTang331/GNS_Thesis/blob/da78d209c640e74a01fbbcc60e83303e589f9fbe/convert_npy_to_tfrecord.py#L86) 
 
-my evaluation loss at the end of the training, it shows one step loss and the rollout loss has a little bit different [image](https://github.com/BoyuanTang331/GNS_Thesis/assets/117408630/d2ac9854-564f-40c1-8aec-872096233b1f)
+my evaluation loss at the end of the training, it shows one step loss and the rollout loss has a little bit different ![image](https://github.com/BoyuanTang331/GNS_Thesis/assets/117408630/d2ac9854-564f-40c1-8aec-872096233b1f)
 
 
 
