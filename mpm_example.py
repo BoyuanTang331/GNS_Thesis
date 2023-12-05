@@ -1,10 +1,17 @@
-export_file = "C:/Users/84017/Desktop/mpm/mpm2d.ply"  # use '/tmp/water3d.ply' for exporting result to disk
+
+"""
+Example to show the mpm 2d/3d simulation results
+taichi version 1.6.0
+
+"""
+
+
+#export_file = ""  # use '/tmp/mpm.ply' for exporting result to disk
 
 import numpy as np
-
 import taichi as ti
 
-ti.init(arch=ti.cpu)
+ti.init(arch=ti.gpu)
 
 dim, n_grid, steps, dt = 2, 128, 20, 2e-4
 # dim, n_grid, steps, dt = 2, 256, 32, 1e-4
@@ -12,10 +19,11 @@ dim, n_grid, steps, dt = 2, 128, 20, 2e-4
 # dim, n_grid, steps, dt = 3, 64, 25, 2e-4
 # dim, n_grid, steps, dt = 3, 128, 25, 8e-5
 
-n_particles=2000
-#n_particles = n_grid**dim // 2 ** (dim - 1)
+
+n_particles = 2000
 dx = 1 / n_grid
-p_rho = 1  # water
+
+p_rho = 1
 p_vol = (dx * 0.5) ** 2
 p_mass = p_vol * p_rho
 gravity = 9.8
@@ -105,21 +113,21 @@ def T(a):
 
 def main():
     init()
-    gui = ti.GUI("water3D", background_color=0x112F41)
-    while gui.running and not gui.get_event(gui.ESCAPE):
+    positions_array = np.zeros((100, n_particles, 2), dtype=np.float32)
+    gui = ti.GUI("MPM3D", background_color=0x112F41)
+    # while gui.running and not gui.get_event(gui.ESCAPE):   #stop when exit the window
+    for frame in range(100):    # stop when generate after 100 frame each frame has timestep step*dt
         for s in range(steps):
             substep()
         pos = F_x.to_numpy()
-        if export_file:
-            writer = ti.tools.PLYWriter(num_vertices=n_particles)
-            n = pos.size // dim
-           # if 2D scenes just define a n and use np.zeros(n) in add_vertex_position
-           # if 3D scenes just write pos[:, 2] for z-axis
-            writer.add_vertex_pos(pos[:, 0], pos[:, 1], np.zeros(n))
-            writer.export_frame(gui.frame, export_file)
-
+        positions_array[frame] = F_x.to_numpy()
+        # if export_file:       # export ply file for Houdini to visualize
+        #     writer = ti.tools.PLYWriter(num_vertices=n_particles)
+        #     writer.add_vertex_pos(pos[:, 0], pos[:, 1], pos[:, 2])
+        #     writer.export_frame(gui.frame, export_file)
         gui.circles(T(pos), radius=1.5, color=0x66CCFF)
         gui.show()
+    # np.save(r'C:\Users\84017\Desktop\numpy\positions2d2.npy', positions_array)
 
 if __name__ == "__main__":
     main()
